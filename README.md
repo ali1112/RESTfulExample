@@ -1,2 +1,0 @@
-# MyTestSerivice1
-# RESTfulExample
