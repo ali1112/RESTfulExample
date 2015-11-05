@@ -1,0 +1,13 @@
+my/test/notepad/utils/Constants.class
+my/test/notepad/dao/MongoOperations.class
+my/test/notepad/dao/UserDao.class
+my/test/notepad/dao/NoteDao.class
+com/mkyong/rest/HelloWorldService.class
+my/test/rest/service/INotesService.class
+my/test/notepad/dao/MongoDBGenericDao.class
+my/test/notepad/dao/IDao.class
+my/test/notepad/resourceEntity/UserEntity.class
+my/test/notepad/resourceEntity/NoteEntity.class
+my/test/notepad/entity/User.class
+my/test/rest/service/NotesServiceImpl.class
+my/test/notepad/entity/Note.class
