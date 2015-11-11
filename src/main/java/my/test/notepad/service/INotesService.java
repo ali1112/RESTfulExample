@@ -4,6 +4,7 @@ import java.util.List;
 
 import my.test.notepad.entity.Note;
 import my.test.notepad.entity.User;
+import my.test.notepad.lib.exception.NoteException;
 import my.test.notepad.resourceEntity.NoteEntity;
 import my.test.notepad.resourceEntity.UserEntity;
 
@@ -24,6 +25,10 @@ public interface INotesService {
 	public User getUser(UserEntity userEntity);
 	
 	public void saveOrUpdateNote(Note note);
+	
+	public void createNote(Note note) throws NoteException;
+	
+	public void updateNote(Integer noteId, String note) throws NoteException;
 	
 	void createOrUpdateUser(User user);
 

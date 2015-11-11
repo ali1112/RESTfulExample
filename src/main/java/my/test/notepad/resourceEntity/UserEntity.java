@@ -1,20 +1,21 @@
 package my.test.notepad.resourceEntity;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserEntity {
 	
-	@JsonProperty("id")
-	private int Id;
+	@JsonProperty("userId")
+	private int userId;
 	
 	@JsonProperty("userName")
 	private String userName;
-	
-	public int getId() {
-		return Id;
+		
+
+	public int getUserId() {
+		return userId;
 	}
-	public void setId(int id) {
-		Id = id;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 	public String getUserName() {
 		return userName;
