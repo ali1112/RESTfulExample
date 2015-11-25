@@ -1,6 +1,7 @@
 package my.test.notepad.rest;
  
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -21,9 +22,11 @@ import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 import com.sun.jersey.spi.inject.Errors.ErrorMessage;
 
 import my.test.notepad.entity.Note;
+import my.test.notepad.entity.NoteBook;
 import my.test.notepad.entity.User;
 import my.test.notepad.lib.ErrorResponseMessage;
 import my.test.notepad.lib.exception.NoteException;
+import my.test.notepad.resourceEntity.NoteBookEntity;
 import my.test.notepad.resourceEntity.NoteEntity;
 import my.test.notepad.resourceEntity.UserEntity;
 import my.test.notepad.service.INotesService;
@@ -53,7 +56,7 @@ public class MyTestService {
 	@Path("/note/{noteId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Note getNote(@PathParam("noteId") String noteId) {
-		Note note=notesServiceImpl.getNote(Integer.parseInt(noteId));
+		Note note=notesServiceImpl.getNote(Long.parseLong(noteId));
 		//return Response.status(200).entity(output).build();
 		return note;
  
@@ -63,7 +66,7 @@ public class MyTestService {
 	@Path("/user/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public User getUser(@PathParam("id") String id) {
-		User user=notesServiceImpl.getUser(Integer.parseInt(id));
+		User user=notesServiceImpl.getUser(Long.parseLong(id));
 		//return Response.status(200).entity(output).build();
 		return user;
  
@@ -74,7 +77,7 @@ public class MyTestService {
 	@Produces(MediaType.APPLICATION_XML)
 	public Note getNoteXML(@PathParam("noteId") String noteId) {
 		NotesServiceImpl notesServiceImpl = new NotesServiceImpl();
-		Note note=notesServiceImpl.getNote(Integer.parseInt(noteId));
+		Note note=notesServiceImpl.getNote(Long.parseLong(noteId));
 		//return Response.status(200).entity(output).build();
 		return note;
  
@@ -88,10 +91,10 @@ public class MyTestService {
 		Note note = null;
 		Response response = null;
 		try {
-			notesServiceImpl.createNote(notesServiceImpl.getNote(noteEntity));
-			note = notesServiceImpl.getNote(noteEntity.getId());
-			System.out.println("Note = " + note.toString());
-		    response = createResponse(Status.CREATED, note);
+			note = notesServiceImpl.createNote(notesServiceImpl.getNote(noteEntity));
+			NoteEntity noteEntity1 = notesServiceImpl.getNoteEntity(note);
+			System.out.println("Note = " + noteEntity1.toString());
+		    response = createResponse(Status.CREATED, noteEntity1);
 
 		} catch (NoteException e) {
 			response = createErrorResponse(Status.INTERNAL_SERVER_ERROR, e);
@@ -100,11 +103,40 @@ public class MyTestService {
 	    return response;
 	}
 	
+	@DELETE
+	@Path("/deleteNote/{noteId}")	
+	public Response deleteNote(@PathParam("noteId") final long noteId) {
+		Response response = null;
+		try {
+			notesServiceImpl.deleteNote(noteId);
+		    response = createResponse(Status.OK, null);
+
+		} catch (NoteException e) {
+			response = createErrorResponse(Status.INTERNAL_SERVER_ERROR, e);
+		}
+	        
+	    return response;
+	}
+	
+	@DELETE
+	@Path("/deleteNoteBook/{noteBookId}")
+	public Response deleteNoteBook(@PathParam("noteBookId") final long noteBookId) {
+		Response response = null;
+		try {
+			notesServiceImpl.deleteNoteBook(noteBookId);
+		    response = createResponse(Status.OK, null);
+
+		} catch (NoteException e) {
+			response = createErrorResponse(Status.INTERNAL_SERVER_ERROR, e);
+		}
+	        
+	    return response;
+	}
 	
 	@PUT @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/updateNote/{noteId}")	
-	public Response updateNote(@PathParam("noteId") final int noteId, final String note) {
+	public Response updateNote(@PathParam("noteId") final long noteId, final String note) {
 		Response response = null;
 		try {
 			notesServiceImpl.updateNote(noteId, note);
@@ -118,6 +150,24 @@ public class MyTestService {
 		}
 	    
 	    
+	    return response;
+	}
+	@POST @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/createNoteBook")	
+	public Response createNoteBook(final NoteBookEntity noteBookEntity) {
+		NoteBook noteBook = null;
+		Response response = null;
+		try {
+			noteBook = notesServiceImpl.createNoteBook(notesServiceImpl.getNoteBook(noteBookEntity));
+			NoteBookEntity noteBookEntity1 = notesServiceImpl.getNoteBookEntity(noteBook);
+			System.out.println("Note = " + noteBookEntity1.toString());
+		    response = createResponse(Status.CREATED, noteBookEntity1);
+
+		} catch (NoteException e) {
+			response = createErrorResponse(Status.INTERNAL_SERVER_ERROR, e);
+		}
+	        
 	    return response;
 	}
 	

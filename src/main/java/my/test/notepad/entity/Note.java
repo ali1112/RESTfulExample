@@ -10,7 +10,8 @@ public class Note {
 
 	private String note;
 	@Id
-	private int noteId;
+	private long noteId;
+	private long noteBookId;
 	private int noteUserId;	
 	private Date createDate;
 	private Date updateDate;
@@ -22,11 +23,9 @@ public class Note {
 	public void setNote(String note) {
 		this.note = note;
 	}
-	public int getId() {
-		return noteId;
-	}
-	public void setId(int id) {
-		this.noteId = id;
+
+	public void setNoteId(long noteId) {
+		this.noteId = noteId;
 	}
 	public int getNoteUserId() {
 		return noteUserId;
@@ -34,7 +33,7 @@ public class Note {
 	public void setNoteUserId(int noteUserId) {
 		this.noteUserId = noteUserId;
 	}
-	public int getNoteId() {
+	public long getNoteId() {
 		return noteId;
 	}
 	public void setNoteId(int noteId) {
@@ -52,10 +51,19 @@ public class Note {
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
+	
+	public long getNoteBookId() {
+		return noteBookId;
+	}
+	public void setNoteBookId(long noteBookId) {
+		this.noteBookId = noteBookId;
+	}
+	
 	@Override
 	public String toString() {
-		return "Note [note=" + note + ", noteId=" + noteId + ", noteUserId=" + noteUserId + ", createDate=" + createDate
-				+ ", updateDate=" + updateDate + "]";
+		return "Note [note=" + note + ", noteId=" + noteId + ", noteBookId=" + noteBookId + ", noteUserId=" + noteUserId
+				+ ", createDate=" + createDate + ", updateDate=" + updateDate + "]";
 	}
+	
 
 }

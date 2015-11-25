@@ -5,7 +5,10 @@ public enum ErrorCode {
     DATABASE_ERROR(1000, "DataBase Error"),
     NOTE_NOT_FOUND(2001, "Note Not Found"),
     NOTE_EXISTS(2002, "Note Already Exists"),
-    JSON_PARSING_EXCEPTION(3001, "Json Parsing Eception");
+    JSON_PARSING_EXCEPTION(3001, "Json Parsing Eception"),
+    NOTE_DELETE_EROOR(2003, "Error Deleting Note"),
+    UNKNOWN_EROOR(2003, "Unknown Error");
+
 
 
     

@@ -1,25 +1,23 @@
 package my.test.notepad.resourceEntity;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public class NoteEntity {
+public class NoteBookEntity {
 
-	@JsonProperty("note")
-	private String note;
-	
-	@JsonProperty("noteId")
-	private long noteId;
-	
 	@JsonProperty("noteBookId")
-	private long noteBookId;
+	private long noteBookId;	
 	
-	@JsonProperty("note_user_id")
-	private int noteUserId;
-
+	@JsonProperty("noteIds")
+	List<Long> noteIds;
+	
+	@JsonProperty("noteBookUserId")
+	private long noteBookUserId;
+	
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ssz")
 	@JsonProperty("createDate")
 	private Date createDate;
@@ -27,60 +25,42 @@ public class NoteEntity {
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ssz")
 	@JsonProperty("updateDate")
 	private Date updateDate;
-
-	public String getNote() {
-		return note;
-	}
-
-	public void setNote(String note) {
-		this.note = note;
-	}
-
-	public long getNoteId() {
-		return noteId;
-	}
-
-	public void setNoteId(long noteId) {
-		this.noteId = noteId;
-	}
-
+	
 	public long getNoteBookId() {
 		return noteBookId;
 	}
-
-	public void setNoteBookId(long noteBookId) {
+	public void setNoteBookId(Long noteBookId) {
 		this.noteBookId = noteBookId;
 	}
-
-	public int getNoteUserId() {
-		return noteUserId;
+	public List<Long> getNoteIds() {
+		return noteIds;
 	}
-
-	public void setNoteUserId(int noteUserId) {
-		this.noteUserId = noteUserId;
+	public void setNoteIds(List<Long> noteIds) {
+		this.noteIds = noteIds;
 	}
-
+	public long getNoteBookUserId() {
+		return noteBookUserId;
+	}
+	public void setNoteBookUserId(long noteBookUserId) {
+		this.noteBookUserId = noteBookUserId;
+	}
 	public Date getCreateDate() {
 		return createDate;
 	}
-
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-
 	public Date getUpdateDate() {
 		return updateDate;
 	}
-
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
-
 	@Override
 	public String toString() {
-		return "NoteEntity [note=" + note + ", noteId=" + noteId + ", noteBookId=" + noteBookId + ", noteUserId="
-				+ noteUserId + ", createDate=" + createDate + ", updateDate=" + updateDate + "]";
+		return "NoteBookEntity [noteBookId=" + noteBookId + ", noteIds=" + noteIds + ", noteBookUserId="
+				+ noteBookUserId + ", createDate=" + createDate + ", updateDate=" + updateDate + "]";
 	}
 	
-
+	
 }

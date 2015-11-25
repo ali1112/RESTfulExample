@@ -10,10 +10,15 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.Index;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.MongoException;
 import com.sun.jersey.api.core.InjectParam;
+
+import my.test.notepad.lib.ErrorCode;
+import my.test.notepad.lib.exception.NoteException;
 
 @Component
 public abstract class MongoDBGenericDao<T, ID extends Serializable> implements
@@ -64,10 +69,11 @@ public abstract class MongoDBGenericDao<T, ID extends Serializable> implements
         return mongoOperations.findById(id, type, collection);
     }
     
-    public T getByID(Integer id, String collection) {
+    public T getByID(Long id, String collection) {
         return mongoOperations.findById(id, type, collection);
     }
 
+    
     public List<T> getAll(String collection) {
         return mongoOperations.findAll(type, collection);
     }
@@ -81,7 +87,30 @@ public abstract class MongoDBGenericDao<T, ID extends Serializable> implements
         }
         return false;
     }
+    
+    public boolean delete(Long id, String collection) {
+      /*  T obj = mongoOperations.findById(id, type, collection);
+        if (obj != null) {
+            mongoOperations.remove(obj);
+            return true;
+        }
+        return false;*/
 
+		Query query = new Query();
+		query.addCriteria(Criteria.where("id").is(id));
+		mongoOperations.remove(query, collection);
+		
+	    
+	    return true;
+    	
+    }
+    
+    public boolean deleteAll(String field, List<Long> ids, String collection) {
+    	Query query = new Query();
+		query.addCriteria(Criteria.where(field).in(ids));
+	    mongoOperations.remove(query, collection);
+        return false;
+    }
     
     public void createCollection(String collection) {
         if (!mongoOperations.collectionExists(collection)) {
@@ -100,6 +129,30 @@ public abstract class MongoDBGenericDao<T, ID extends Serializable> implements
     		
     	}
 		return pobject;
+    	
+    }
+
+    public <K> void removeOne( String field, K value, String collection) {
+    	try {
+    		Query query = new Query();
+    		query.addCriteria(Criteria.where(field).is(value));
+    	    mongoOperations.remove(query, collection);
+    	} catch(MongoException.DuplicateKey e) {
+    		
+    	}
+    	
+    }
+
+    
+    public <K> void removeAll( String field, List<K> value, String collection) {
+    	createCollection(collection);
+    	try {
+    		Query query = new Query();
+    		query.addCriteria(Criteria.where(field).all(value));
+    	    mongoOperations.remove(query, collection);
+    	} catch(MongoException.DuplicateKey e) {
+    		
+    	}
     	
     }
 

@@ -5,16 +5,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class UserEntity {
 	
 	@JsonProperty("userId")
-	private int userId;
+	private long userId;
 	
 	@JsonProperty("userName")
 	private String userName;
 		
 
-	public int getUserId() {
+	public long getUserId() {
 		return userId;
 	}
-	public void setUserId(int userId) {
+	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 	public String getUserName() {

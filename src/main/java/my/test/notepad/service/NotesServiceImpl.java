@@ -12,15 +12,19 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.spring.Autowire;
 
+import my.test.notepad.dao.INoteBookDao;
 import my.test.notepad.dao.INoteDao;
+import my.test.notepad.dao.ISequenceDao;
 import my.test.notepad.dao.IUserDao;
 import my.test.notepad.dao.NoteDao;
 import my.test.notepad.dao.UserDao;
 import my.test.notepad.entity.Note;
+import my.test.notepad.entity.NoteBook;
 import my.test.notepad.entity.User;
 import my.test.notepad.lib.ErrorCode;
 import my.test.notepad.lib.exception.JsonParsingException;
 import my.test.notepad.lib.exception.NoteException;
+import my.test.notepad.resourceEntity.NoteBookEntity;
 import my.test.notepad.resourceEntity.NoteEntity;
 import my.test.notepad.resourceEntity.UserEntity;
 import my.test.notepad.utils.Constants;
@@ -32,9 +36,17 @@ public class NotesServiceImpl implements INotesService {
 	INoteDao noteDao;
 	
 	@Autowired
+	INoteBookDao noteBookDao;
+	
+	@Autowired
 	IUserDao userDao;
 	
+	@Autowired
+	ISequenceDao sequenceDao;
 	
+	private static final String NOTE_SEQ_KEY = "note";
+	private static final String NOTEBOOK_SEQ_KEY = "noteBook";
+
 
 	@Override
 	public boolean saveUpdateNote(int noteId, int userId, String content) {
@@ -43,7 +55,7 @@ public class NotesServiceImpl implements INotesService {
 	}
 
 	@Override
-	public Note getNote(int noteId) {
+	public Note getNote(Long noteId) {
 		
 		Note note1 = noteDao.getByID((noteId), Constants.NOTE_COLLECTION);
 		return note1;
@@ -65,7 +77,7 @@ public class NotesServiceImpl implements INotesService {
 	@Override
 	public Note getNote(NoteEntity noteEntity) {
 		Note note = new Note();
-		note.setId(noteEntity.getId());
+		note.setNoteId(noteEntity.getNoteId());
 		note.setNote(noteEntity.getNote());
 		note.setNoteUserId(noteEntity.getNoteUserId());
 		note.setCreateDate(noteEntity.getCreateDate());
@@ -109,27 +121,21 @@ public class NotesServiceImpl implements INotesService {
 	}
 
 	@Override
-	public User getUser(Integer userId) {
+	public User getUser(Long userId) {
 		User user = userDao.getByID(userId, Constants.USER_COLLECTION);
 		return user;
 	}
 
 	@Override
-	public void createNote(Note note) throws NoteException {
-		Note note1 = noteDao.getByID(note.getId(), Constants.NOTE_COLLECTION);
-		if(note1 ==null){
+	public Note createNote(Note note) throws NoteException {
+			note.setNoteId(sequenceDao.getNextSequenceId(NOTE_SEQ_KEY));
 			note.setCreateDate(new Date());
 			noteDao.saveOrUpdate(note, Constants.NOTE_COLLECTION);
-		}
-		
-		else{
-			throw new NoteException(ErrorCode.NOTE_EXISTS, "Note with ID already exist");
-		}
-		
+			return note;
 	}
 
 	@Override
-	public void updateNote(Integer noteId, String note) throws NoteException {
+	public void updateNote(Long noteId, String note) throws NoteException {
 		Note note1 = noteDao.getByID(noteId, Constants.NOTE_COLLECTION);
 		if(note1 == null){
 			
@@ -159,5 +165,81 @@ public class NotesServiceImpl implements INotesService {
 			noteDao.saveOrUpdate(note1, Constants.NOTE_COLLECTION);
 		}
 				
+	}
+
+	@Override
+	public NoteBook createNoteBook(NoteBook noteBook) throws NoteException {
+		noteBook.setNoteBookId(sequenceDao.getNextSequenceId(NOTEBOOK_SEQ_KEY));
+		noteBook.setCreateDate(new Date());
+			noteBookDao.saveOrUpdate(noteBook, Constants.NOTEBOOK_COLLECTION);
+			return noteBook;
+	}
+
+	
+	@Override
+	public NoteEntity getNoteEntity(Note note) {
+		NoteEntity noteEntity = new NoteEntity();
+		noteEntity.setNoteId(note.getNoteId());
+		noteEntity.setNote(note.getNote());
+		noteEntity.setNoteUserId(note.getNoteUserId());
+		noteEntity.setCreateDate(note.getCreateDate());
+		noteEntity.setUpdateDate(note.getUpdateDate());
+		noteEntity.setNoteBookId(note.getNoteBookId());
+
+		return noteEntity;
+	}
+
+	@Override
+	public NoteBook getNoteBook(NoteBookEntity noteBookEntity) {
+		NoteBook noteBook = new NoteBook();
+		noteBook.setNoteBookId(noteBookEntity.getNoteBookId());
+		noteBook.setNoteIds(noteBookEntity.getNoteIds());
+		noteBook.setNoteBookUserId(noteBookEntity.getNoteBookUserId());
+		return noteBook;
+	}
+
+	@Override
+	public NoteBookEntity getNoteBookEntity(NoteBook noteBook) {
+		NoteBookEntity noteBookEntity = new NoteBookEntity();
+		noteBookEntity.setNoteBookId(noteBook.getNoteBookId());
+		noteBookEntity.setNoteIds(noteBook.getNoteIds());
+		noteBookEntity.setNoteBookUserId(noteBook.getNoteBookUserId());
+		noteBookEntity.setCreateDate(noteBook.getCreateDate());
+		noteBookEntity.setUpdateDate(noteBook.getUpdateDate());
+		
+		return noteBookEntity;
+	}
+
+	@Override
+	public void deleteNote(Long noteId) throws NoteException {
+		try {
+			noteDao.delete(noteId, Constants.NOTE_COLLECTION);
+		} 
+		catch (NoteException e) {
+			throw new NoteException(ErrorCode.NOTE_DELETE_EROOR, "Error while deleting Note");
+		}
+		catch (Exception e) {
+			throw new NoteException(ErrorCode.UNKNOWN_EROOR, "Unknown Error");
+		}	
+	}
+
+	@Override
+	public void deleteNoteBook(Long noteBookId) throws NoteException {
+		try {
+			List<Long> noteIds = noteBookDao.getByID(noteBookId,Constants.NOTEBOOK_COLLECTION).getNoteIds();
+			noteBookDao.deleteAll("id", noteIds, Constants.NOTE_COLLECTION);
+			noteBookDao.delete(noteBookId, Constants.NOTEBOOK_COLLECTION);
+		} 
+		catch (NoteException e) {
+			throw new NoteException(ErrorCode.NOTE_DELETE_EROOR, "Error while deleting Note");
+		}
+		catch (Exception e) {
+			throw new NoteException(ErrorCode.UNKNOWN_EROOR, "Unknown Error");
+		}	
+	}
+	
+	@Override
+	public void deleteNotes(List<Long> noteIds) {
+		noteDao.deleteAll("id", noteIds, Constants.NOTE_COLLECTION);			
 	}	
 }
